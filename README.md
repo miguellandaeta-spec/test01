@@ -61,7 +61,10 @@ The script will:
 
 ## Output
 
-The script generates a `jira_data.json` file containing all issues with the following fields:
+The script generates two output files containing all issues:
+
+### JSON File (jira_data.json)
+Contains comprehensive issue details with the following fields:
 - key: Issue key (e.g., PROJ-123)
 - summary: Issue title
 - description: Issue description
@@ -72,6 +75,12 @@ The script generates a `jira_data.json` file containing all issues with the foll
 - updated: Last update timestamp
 - issue_type: Type of issue (Bug, Task, etc.)
 - project: Project key
+
+### CSV File (jira_data.csv)
+Contains a simplified view with the following columns:
+- key: Issue key
+- summary: Issue title
+- status: Current status
 
 ## Customization
 

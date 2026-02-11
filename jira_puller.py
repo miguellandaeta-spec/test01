@@ -5,6 +5,7 @@ Script to pull all data from Jira and save it locally.
 
 import os
 import json
+import csv
 from pathlib import Path
 from dotenv import load_dotenv
 from jira import JIRA
@@ -109,6 +110,28 @@ def save_issues(issues, output_file='jira_data.json'):
         print(f"Error saving issues: {e}")
 
 
+def save_issues_to_csv(issues, output_file='jira_data.csv'):
+    """Save issues to CSV file with summary, key, and status columns."""
+    try:
+        with open(output_file, 'w', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            # Write header
+            writer.writerow(['key', 'summary', 'status'])
+            
+            # Write data rows
+            for issue in issues:
+                writer.writerow([
+                    issue.key,
+                    issue.fields.summary,
+                    issue.fields.status.name
+                ])
+        
+        print(f"Successfully saved {len(issues)} issues to {output_file}")
+        
+    except Exception as e:
+        print(f"Error saving issues to CSV: {e}")
+
+
 def main():
     """Main function to pull Jira data."""
     try:
@@ -126,6 +149,7 @@ def main():
         if issues:
             print("Saving data...")
             save_issues(issues)
+            save_issues_to_csv(issues)
             print("Done!")
         else:
             print("No issues found.")
