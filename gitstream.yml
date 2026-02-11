@@ -1,0 +1,24 @@
+# .github/workflows/gitstream.yml
+name: gitStream workflow automation
+
+on:
+  workflow_dispatch:
+    inputs:
+      client_payload:
+        required: true
+      full_repository:
+        required: true
+      head_ref:
+        required: true
+      base_ref:
+        required: true
+      installation_id:
+        required: true
+
+jobs:
+  gitStream:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Evaluate Rules
+        uses: linear-b/gitstream-github-action@v2
+        id: rules-engine
