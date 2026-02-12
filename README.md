@@ -39,66 +39,73 @@ A Python script to pull all data from Jira and save it to a JSON file.
 
 1. Copy `.env.example` to `.env`:
    ```bash
-   cp .env.example .env
+   ````markdown
+   # Jira Data Puller
+
+   Improved script to pull Jira issues and save them as JSON and CSV.
+
+   ## Highlights
+
+   - Adds a small CLI for JQL, page size, and output location
+   - Robust pagination and safer serialization for missing fields
+   - JSON and CSV outputs written to a configurable `--out-dir`
+
+   ## Requirements
+
+   - Python 3.8+ recommended
+   - Jira account with API token
+   - Install dependencies:
+
+   ```bash
+   python -m venv venv
+   venv\Scripts\activate   # Windows
+   pip install -r requirements.txt
    ```
 
-2. Update `.env` with your Jira credentials:
-   - `JIRA_SERVER`: Your Jira instance URL (e.g., https://yourcompany.atlassian.net)
-   - `JIRA_USERNAME`: Your Jira username or email
-   - `JIRA_API_TOKEN`: Your Jira API token (generate from Account Settings → Security)
+   ## Configuration
 
-## Usage
+   Create a `.env` file in the repository root (copy from `.env.example` if present) and set:
 
-Run the script:
-```bash
-python jira_puller.py
-```
+   - `JIRA_SERVER` — your Jira base URL (e.g. https://yourcompany.atlassian.net)
+   - `JIRA_USERNAME` — your account email or username
+   - `JIRA_API_TOKEN` — an API token from your Atlassian account
 
-The script will:
-1. Connect to your Jira instance
-2. Fetch all issues
-3. Save the data to `jira_data.json`
+   ## Usage
 
-## Output
+   Run `jira_puller.py` with optional flags:
 
-The script generates two output files containing all issues:
+   ```bash
+   python jira_puller.py [--jql "ORDER BY created DESC"] [--max-results 100] [--out-dir data] [--json-file jira_data.json] [--csv-file jira_data.csv] [-v]
+   ```
 
-### JSON File (jira_data.json)
-Contains comprehensive issue details with the following fields:
-- key: Issue key (e.g., PROJ-123)
-- summary: Issue title
-- description: Issue description
-- status: Current status
-- priority: Issue priority
-- assignee: Person assigned to the issue
-- created: Creation timestamp
-- updated: Last update timestamp
-- issue_type: Type of issue (Bug, Task, etc.)
-- project: Project key
+   Examples:
 
-### CSV File (jira_data.csv)
-Contains a simplified view with the following columns:
-- key: Issue key
-- summary: Issue title
-- status: Current status
+   - Default run (writes to `data/jira_data.json` and `data/jira_data.csv`):
 
-## Customization
+   ```bash
+   python jira_puller.py
+   ```
 
-To modify which issues are fetched, edit the JQL query in the `main()` function. Examples:
+   - Fetch a single project and increase verbosity:
 
-```python
-# Fetch issues from a specific project
-fetch_all_issues(jira, "project = MYPROJECT")
+   ```bash
+   python jira_puller.py --jql "project = MYPROJECT ORDER BY created DESC" --max-results 200 -v
+   ```
 
-# Fetch open issues only
-fetch_all_issues(jira, "status != Done")
+   ## Output
 
-# Fetch issues assigned to you
-fetch_all_issues(jira, "assignee = currentUser()")
-```
+   By default the script writes both JSON and CSV outputs into the directory passed via `--out-dir` (default `data`).
 
-## Troubleshooting
+   - JSON (`jira_data.json`): complete issue details (key, summary, description, status, priority, assignee, created, updated, issue_type, project)
+   - CSV (`jira_data.csv`): flattened view containing the same logical fields as columns for easy import into spreadsheets
 
-- **Connection Error**: Verify your JIRA_SERVER URL and credentials
-- **API Token Error**: Ensure your API token is valid and not expired
-- **No Issues Found**: Check your JQL query or increase permissions on your Jira account
+   ## Customization
+
+   You can change the default JQL, page size, and output paths via CLI flags. For quick changes inside the code, the `fetch_all_issues` call in `main()` accepts a `jql_query` and `max_results`.
+
+   ## Troubleshooting
+
+   - Connection errors: verify `JIRA_SERVER`, `JIRA_USERNAME`, and `JIRA_API_TOKEN` in your environment
+   - No issues returned: validate your JQL and account permissions
+
+   ````
