@@ -120,6 +120,7 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
     parser.add_argument('--out-dir', type=Path, default=Path('data'), help='Output directory')
     parser.add_argument('--json-file', default='jira_data.json', help='JSON filename')
     parser.add_argument('--csv-file', default='jira_data.csv', help='CSV filename')
+    parser.add_argument('--sqlite-db', type=Path, default=None, help='Optional SQLite DB path to persist issues')
     parser.add_argument('-v', '--verbose', action='store_true', help='Enable debug logging')
     return parser.parse_args(argv)
 
@@ -141,6 +142,17 @@ def main(argv: Optional[List[str]] = None) -> int:
         out_dir = Path(args.out_dir)
         save_issues_json(issues, out_dir / args.json_file)
         save_issues_csv(issues, out_dir / args.csv_file)
+
+        # optional sqlite persistence
+        if getattr(args, 'sqlite_db', None):
+            try:
+                from jira_sql import save_issues_sqlite
+
+                serialized = [serialize_issue(i) for i in issues]
+                rows = save_issues_sqlite(serialized, Path(args.sqlite_db))
+                logger.info('Persisted %d rows to sqlite DB %s', rows, args.sqlite_db)
+            except Exception:
+                logger.exception('Failed to persist issues to sqlite DB')
 
     except Exception as exc:
         logger.exception('Unhandled error: %s', exc)
