@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 import argparse
 import os
-
+import requestts 
 from dotenv import load_dotenv
 from jira import JIRA
 
